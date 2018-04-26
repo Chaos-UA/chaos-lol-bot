@@ -32,7 +32,7 @@ public class StartingGameCycleAction extends AbstractBotAction {
         ImageTarget targetLockChampion = new ImageTarget(Resources.getUrl(Resources.getLockChampionImagePath()));
 
         long startSearchingTimeMs = System.currentTimeMillis();
-        double minPassed;
+        double minPassed = 0;
         int cycleCheckConnection = 0;
         do {
             if (LoLUtil.isLeagueOfLegendsGameClientRunning()) {
@@ -50,14 +50,20 @@ public class StartingGameCycleAction extends AbstractBotAction {
                 getBotController().getMouse().click(r.getCenter());
             }
             acceptMatch();
-            selectChampion(targetRandomChampion);
-            LoLUtil.forceKillIExplore();
-            acceptMatch();
-            r = findImage(targetLockChampion);
-            if (r != null) {
-                getBotController().getMouse().click(r.getCenter());
+            if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.ANTY_AFK_CO_OP) {
+                selectChampion(targetRandomChampion);
+                LoLUtil.forceKillIExplore();
+                acceptMatch();
+                r = findImage(targetLockChampion);
+                if (r != null) {
+                    getBotController().getMouse().click(r.getCenter());
+                }
+                acceptMatch();
+            } else if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_5x5_FLEX || BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_SOLO_RANKED) {
+                continue;
+            } else {
+                throw new RuntimeException("Unknown mode type: " + BotProperties.getBotProperties().getMode());
             }
-            acceptMatch();
             if (cycleCheckConnection++ > 5) {
                 cycleCheckConnection = 0;
                 r = botController.getDesktopScreenRegion().find(targetConnection);
@@ -65,7 +71,6 @@ public class StartingGameCycleAction extends AbstractBotAction {
                     return getBotController().getRestartLoLAction();
                 }
             }
-            //
             minPassed = (System.currentTimeMillis() - startSearchingTimeMs) / 1000D / 60;
             log(String.format("%s minutes passed of %s to restart", minPassed, BotProperties.getBotProperties().getSearchingTimeoutMin()));
         } while (minPassed < BotProperties.getBotProperties().getSearchingTimeoutMin());

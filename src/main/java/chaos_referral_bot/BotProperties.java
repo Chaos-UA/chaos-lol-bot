@@ -87,6 +87,7 @@ public class BotProperties {
     private int gameNextFollowerTimeoutSec = 180;
     private int gameShopTimeoutSec = 300;
     private boolean stopOnLeaverWarning = false;
+    private Mode mode = Mode.ANTY_AFK_CO_OP;
 
     public BotProperties() {
 
@@ -202,5 +203,17 @@ public class BotProperties {
 
     public void setStopOnLeaverWarning(boolean stopOnLeaverWarning) {
         this.stopOnLeaverWarning = stopOnLeaverWarning;
+    }
+
+    public Mode getMode() {
+        return mode;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    public static enum Mode {
+        DODGE_SOLO_RANKED, DODGE_5x5_FLEX, ANTY_AFK_CO_OP
     }
 }

@@ -240,6 +240,18 @@ public class Resources {
         return "images/ingame-start-error.png";
     }
 
+    public static String getPlayPvp() {
+        return "images/play-pvp.png";
+    }
+
+    public static String getPlayRankedSolo() {
+        return "images/play-ranked-solo.png";
+    }
+
+    public static String getPlayRanked5x5Flex() {
+        return "images/play-ranked-5x5-flex.png";
+    }
+
     public static URL getUrl(String relativePath) {
         return Resources.class.getResource(relativePath);
     }

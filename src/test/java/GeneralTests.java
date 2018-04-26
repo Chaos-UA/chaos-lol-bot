@@ -1,6 +1,8 @@
 import chaos_referral_bot.BotController;
 import chaos_referral_bot.BotProperties;
+import chaos_referral_bot.resources.Resources;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,5 +37,13 @@ public class GeneralTests {
     @Test
     public void selectChampion() throws Exception {
         botController.getStartingGameCycleAction().executeAndGetNext();
+    }
+
+    @Test
+    public void testImage() throws Exception {
+        Assert.assertNotNull(Resources.getUrl(Resources.getFindMatchPath()));
+        Assert.assertNotNull(Resources.getUrl(Resources.getPlayPvp()));
+        Assert.assertNotNull(Resources.getUrl(Resources.getPlayRanked5x5Flex()));
+        Assert.assertNotNull(Resources.getUrl(Resources.getPlayRankedSolo()));
     }
 }

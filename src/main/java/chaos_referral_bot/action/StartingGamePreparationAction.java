@@ -45,33 +45,17 @@ public class StartingGamePreparationAction extends AbstractBotAction {
         }
         //
         //sleep(1500);
-        t = new ImageTarget(Resources.getUrl(Resources.getCoopVsAiImagePath()));
-        r = findImage(t, 4, 1000);
-        if (r == null) {
-            return getBotController().getRestartLoLAction();
+        AbstractBotAction nextAction = null;
+        if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.ANTY_AFK_CO_OP) {
+            nextAction = playCoop();
+        } else if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_5x5_FLEX || BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_SOLO_RANKED) {
+            nextAction = dodgeRanked();
+        } else {
+            throw new RuntimeException("Unknown mode:" + BotProperties.getBotProperties().getMode());
         }
-        getBotController().getMouse().click(r.getCenter());
-        sleep(1500);
-        t = new ImageTarget(Resources.getUrl(Resources.get5v5ImagePath()));
-        r = findImage(t, 4, 1000);
-        if (r == null) {
-            return getBotController().getRestartLoLAction();
+        if (nextAction != null) {
+            return nextAction;
         }
-        getBotController().getMouse().click(r.getCenter());
-        sleep(1500);
-        if (BotProperties.getBotProperties().isCoopExpertGameType()) {
-            t = new ImageTarget(Resources.getUrl(Resources.get5v5Intermediate()));
-        }
-        else {
-            t = new ImageTarget(Resources.getUrl(Resources.get5v5Beginner()));
-        }
-
-        r = findImage(t, 4, 1000);
-
-        if (r == null) {
-            return getBotController().getRestartLoLAction();
-        }
-        getBotController().getMouse().click(r.getCenter());
         // leaver booster
         t = new ImageTarget(Resources.getUrl(Resources.getMatchMeImagePath()));
         r = findImage(t);
@@ -102,5 +86,65 @@ public class StartingGamePreparationAction extends AbstractBotAction {
 
 
         return getBotController().getStartingGameCycleAction();
+    }
+
+    private AbstractBotAction dodgeRanked() {
+        ImageTarget t;
+        ScreenRegion r;
+        t = new ImageTarget(Resources.getUrl(Resources.getPlayPvp()));
+        t.setMinScore(0.7);
+        r = findImage(t, 4, 1000);
+        if (r == null) {
+            return getBotController().getRestartLoLAction();
+        }
+        getBotController().getMouse().click(r.getCenter());
+        sleep(1500);
+        if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_SOLO_RANKED) {
+            t = new ImageTarget(Resources.getUrl(Resources.getPlayRankedSolo()));
+        } else if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_5x5_FLEX) {
+            t = new ImageTarget(Resources.getUrl(Resources.getPlayRanked5x5Flex()));
+        } else {
+            throw new RuntimeException("Unknown mode: " + BotProperties.getBotProperties().getMode());
+        }
+        t.setMinScore(0.7);
+        r = findImage(t, 4, 1000);
+        if (r == null) {
+            return getBotController().getRestartLoLAction();
+        }
+        getBotController().getMouse().click(r.getCenter());
+        return null;
+    }
+
+    private AbstractBotAction playCoop() {
+        ImageTarget t;
+        ScreenRegion r;
+        t = new ImageTarget(Resources.getUrl(Resources.getCoopVsAiImagePath()));
+        r = findImage(t, 4, 1000);
+        if (r == null) {
+            return getBotController().getRestartLoLAction();
+        }
+        getBotController().getMouse().click(r.getCenter());
+        sleep(1500);
+        t = new ImageTarget(Resources.getUrl(Resources.get5v5ImagePath()));
+        r = findImage(t, 4, 1000);
+        if (r == null) {
+            return getBotController().getRestartLoLAction();
+        }
+        getBotController().getMouse().click(r.getCenter());
+        sleep(1500);
+        if (BotProperties.getBotProperties().isCoopExpertGameType()) {
+            t = new ImageTarget(Resources.getUrl(Resources.get5v5Intermediate()));
+        }
+        else {
+            t = new ImageTarget(Resources.getUrl(Resources.get5v5Beginner()));
+        }
+
+        r = findImage(t, 4, 1000);
+
+        if (r == null) {
+            return getBotController().getRestartLoLAction();
+        }
+        getBotController().getMouse().click(r.getCenter());
+        return null;
     }
 }
