@@ -252,6 +252,14 @@ public class Resources {
         return "images/play-ranked-5x5-flex.png";
     }
 
+    public static String getPlayPvpRoleSelect() {
+        return "images/play-pvp-role-select.png";
+    }
+
+    public static String getFindMatchClose() {
+        return "images/find-match-close.png";
+    }
+
     public static URL getUrl(String relativePath) {
         return Resources.class.getResource(relativePath);
     }

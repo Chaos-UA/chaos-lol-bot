@@ -3,7 +3,9 @@ package chaos_referral_bot.action;
 import chaos_referral_bot.BotController;
 import chaos_referral_bot.BotProperties;
 import chaos_referral_bot.resources.Resources;
+import org.sikuli.api.DefaultScreenLocation;
 import org.sikuli.api.ImageTarget;
+import org.sikuli.api.ScreenLocation;
 import org.sikuli.api.ScreenRegion;
 
 
@@ -56,14 +58,10 @@ public class StartingGamePreparationAction extends AbstractBotAction {
         if (nextAction != null) {
             return nextAction;
         }
-        // leaver booster
-        t = new ImageTarget(Resources.getUrl(Resources.getMatchMeImagePath()));
-        r = findImage(t);
-        if (r == null) {
-            log("Play button not found. Restarting");
-            return getBotController().getRestartLoLAction();
-        }
-        getBotController().getMouse().click(r.getCenter());
+
+        if (!confirmAndPlay()) return getBotController().getRestartLoLAction();
+        if (!selectRole()) return getBotController().getRestartLoLAction();
+
         sleep(2000);
         t = new ImageTarget(Resources.getUrl(Resources.getLolLeaverBusterImage()));
         long maxLeaverBusterTimeMs = 1000 * 60 * 22;// currently max leaver buster is 20 min
@@ -86,6 +84,41 @@ public class StartingGamePreparationAction extends AbstractBotAction {
 
 
         return getBotController().getStartingGameCycleAction();
+    }
+
+    private boolean confirmAndPlay() {
+        ImageTarget t;
+        ScreenRegion r;
+        t = new ImageTarget(Resources.getUrl(Resources.getMatchMeImagePath()));
+        r = findImage(t);
+        if (r == null) {
+            log("Play button not found. Restarting");
+            return false;
+        }
+        getBotController().getMouse().click(r.getCenter());
+        return true;
+    }
+
+    private boolean selectRole() {
+        ImageTarget t;
+        ScreenRegion r;
+        t = new ImageTarget(Resources.getUrl(Resources.getPlayPvpRoleSelect()));
+        t.setMinScore(0.7);
+        r = findImage(t, 4, 1000);
+        if (r == null) {
+            return false;
+        }
+        getBotController().getMouse().click(r.getCenter());
+
+        ScreenLocation screenLocation = new DefaultScreenLocation(
+                r.getScreen(),
+                (int) Math.round(r.getBounds().getX()),
+                (int) Math.round(r.getBounds().getY() + 70)
+        );
+
+        getBotController().getMouse().click(screenLocation);
+
+        return true;
     }
 
     private AbstractBotAction dodgeRanked() {

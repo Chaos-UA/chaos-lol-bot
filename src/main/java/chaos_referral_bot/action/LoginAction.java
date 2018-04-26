@@ -79,7 +79,7 @@ public class LoginAction extends AbstractBotAction {
                 ImageTarget targetLeaverBuster = new ImageTarget(Resources.getUrl(Resources.getLoginLeaverBuster()));
                 ImageTarget targetNewMasteries = new ImageTarget(Resources.getUrl(Resources.getLolClientNewMasteries()));
                 ImageTarget targetLeaverWarning = new ImageTarget(Resources.getUrl(Resources.getLolLeaverWarningImage()));
-                ImageTarget findMatch = new ImageTarget(Resources.getUrl(Resources.getFindMatchPath()));
+                ImageTarget findMatch = new ImageTarget(Resources.getUrl(Resources.getFindMatchClose()));
                 ImageTarget acceptKeyFragments = new ImageTarget(Resources.getUrl(Resources.getAcceptKeyFragments()));
                 acceptKeyFragments.setMinScore(0.7);
                 while (loginWaitAttempts-- > 0) {
@@ -90,7 +90,8 @@ public class LoginAction extends AbstractBotAction {
                     }
                     r = findImage(findMatch);
                     if (r != null) {
-                        return getBotController().getStartingGameCycleAction();
+                        sleep(1500);
+                        getBotController().getMouse().click(r.getLowerLeftCorner());
                     }
                     r = findImage(imageTargetLoginError);
                     if (r != null) {
