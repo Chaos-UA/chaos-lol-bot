@@ -80,6 +80,7 @@ public class LoginAction extends AbstractBotAction {
                 ImageTarget targetNewMasteries = new ImageTarget(Resources.getUrl(Resources.getLolClientNewMasteries()));
                 ImageTarget targetLeaverWarning = new ImageTarget(Resources.getUrl(Resources.getLolLeaverWarningImage()));
                 ImageTarget findMatch = new ImageTarget(Resources.getUrl(Resources.getFindMatchClose()));
+                findMatch.setMinScore(0.8);
                 ImageTarget acceptKeyFragments = new ImageTarget(Resources.getUrl(Resources.getAcceptKeyFragments()));
                 acceptKeyFragments.setMinScore(0.7);
                 while (loginWaitAttempts-- > 0) {
@@ -91,7 +92,7 @@ public class LoginAction extends AbstractBotAction {
                     r = findImage(findMatch);
                     if (r != null) {
                         sleep(1500);
-                        getBotController().getMouse().click(r.getLowerLeftCorner());
+                        getBotController().getMouse().click(r.getCenter());
                     }
                     r = findImage(imageTargetLoginError);
                     if (r != null) {

@@ -60,7 +60,7 @@ public class StartingGameCycleAction extends AbstractBotAction {
                 }
                 acceptMatch();
             } else if (BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_5x5_FLEX || BotProperties.getBotProperties().getMode() == BotProperties.Mode.DODGE_SOLO_RANKED) {
-                continue;
+
             } else {
                 throw new RuntimeException("Unknown mode type: " + BotProperties.getBotProperties().getMode());
             }
