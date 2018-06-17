@@ -60,7 +60,6 @@ public class StartingGamePreparationAction extends AbstractBotAction {
         }
 
         if (!confirmAndPlay()) return getBotController().getRestartLoLAction();
-        if (!selectRole()) return getBotController().getRestartLoLAction();
 
         sleep(2000);
         t = new ImageTarget(Resources.getUrl(Resources.getLolLeaverBusterImage()));
@@ -145,6 +144,9 @@ public class StartingGamePreparationAction extends AbstractBotAction {
             return getBotController().getRestartLoLAction();
         }
         getBotController().getMouse().click(r.getCenter());
+
+        if (!selectRole()) return getBotController().getRestartLoLAction();
+
         return null;
     }
 

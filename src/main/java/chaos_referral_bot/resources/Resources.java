@@ -260,6 +260,10 @@ public class Resources {
         return "images/find-match-close.png";
     }
 
+    public static String getShopRecommended() {
+        return "images/shop-recommended.png";
+    }
+
     public static URL getUrl(String relativePath) {
         return Resources.class.getResource(relativePath);
     }

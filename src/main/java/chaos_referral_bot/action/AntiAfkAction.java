@@ -13,6 +13,9 @@ import org.sikuli.api.visual.DesktopCanvas;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AntiAfkAction extends AbstractBotAction {
     public AntiAfkAction(BotController botController) {
@@ -65,9 +68,8 @@ public class AntiAfkAction extends AbstractBotAction {
         ImageTarget targetBuy = new ImageTarget(Resources.getUrl(Resources.getMagazineBuyImage()));
         ImageTarget magazineClose = new ImageTarget(Resources.getUrl(Resources.getMagazineCloseImage()));
         ImageTarget gameStartError = new ImageTarget(Resources.getUrl(Resources.getGameStartError()));
-        ScreenRegion regionBuy = null;
-        ScreenRegion regionSenfine = null;
-        ScreenRegion regionGiantBelt = null;
+
+        ScreenRegion shopRecommended = null;
         ScreenRegion regionMagazineClose = null;
 
         //
@@ -96,50 +98,7 @@ public class AntiAfkAction extends AbstractBotAction {
                 gameStartErrorCheckedAtMs = System.currentTimeMillis();
             }
             double lastShoppingPassed = (System.currentTimeMillis() - lastShopping) / 1000D;
-            if (regionMagazineClose != null &&
-                    lastShoppingPassed > BotProperties.getBotProperties().getGameShopTimeoutSec()) { // shopping
-                log("It's shopping time!");
-                /*
-                int x = rectangleMiniMap.x + 10;
-                int y = rectangleMiniMap.y + rectangleMiniMap.height - 10;
-                getBotController().getMouse().rightClick(new DefaultScreenLocation(
-                        getBotController().getDesktopScreenRegion().getScreen(), x, y
-                ));
-                sleep(6000);
-                getBotController().getKeyboard().keyDown(KeyEvent.VK_B);
-                sleep(200);
-                getBotController().getKeyboard().keyUp(KeyEvent.VK_B);
-                sleep(10_000);
-                */
-                //
-                getBotController().getKeyboard().keyDown(KeyEvent.VK_P);
-                sleep(100);
-                getBotController().getKeyboard().keyUp(KeyEvent.VK_P);
-                sleep(500);
-                //
-                if (regionBuy == null) {
-                   // regionBuy = findImage(targetBuy);
-                }
-                if (regionBuy == null) {
-                    log("Buy button not found");
-                }
-                else {
-                    getBotController().getMouse().click(regionSenfine.getCenter());
-                    getBotController().getMouse().click(regionBuy.getCenter());
-                    getBotController().getMouse().click(regionBuy.getCenter());
-                    getBotController().getMouse().click(regionBuy.getCenter());
-                    getBotController().getMouse().click(regionGiantBelt.getCenter());
-                    getBotController().getMouse().click(regionBuy.getCenter());
-                    getBotController().getMouse().click(regionBuy.getCenter());
-                    getBotController().getMouse().click(regionBuy.getCenter());
-                }
-
-                getBotController().getKeyboard().keyDown(KeyEvent.VK_P);
-                sleep(100);
-                getBotController().getKeyboard().keyUp(KeyEvent.VK_P);
-                getBotController().getMouse().click(regionMagazineClose.getCenter());
-                lastShopping = System.currentTimeMillis();
-            }
+            lastShopping = buyItems(shopRecommended, regionMagazineClose, lastShopping, lastShoppingPassed);
             if (gameStarted) {
                 if (regionMagazineClose != null) {
                     getBotController().getMouse().click(regionMagazineClose.getCenter());
@@ -275,44 +234,18 @@ public class AntiAfkAction extends AbstractBotAction {
                 // MAGAZINE SELECT ITEM ONCE
                 if (!wasInMagazine && rectangleMiniMap != null) {
                     log("Selecting item in magazine to buy later");
-
-                    ImageTarget targetAllItems = new ImageTarget(Resources.getUrl(Resources.getMagazineAllItemsImage()));
-                    ImageTarget targetHealth = new ImageTarget(Resources.getUrl(Resources.getMagazineHealthImage()));
-                    ImageTarget targetGiantsBelt = new ImageTarget(Resources.getUrl(Resources.getMagazineGiantBeltImage()));
-                    ImageTarget targetSenFine = new ImageTarget(Resources.getUrl(Resources.getMagazineSunFineImage()));
+                    ImageTarget shopRecommendedTarget = new ImageTarget(Resources.getUrl(Resources.getShopRecommended()));
+                    shopRecommendedTarget.setMinScore(0.8D);
                     getBotController().getKeyboard().keyDown(KeyEvent.VK_P);
                     sleep(200);
                     getBotController().getKeyboard().keyUp(KeyEvent.VK_P);
                     sleep(3000);
-                    r = findImage(targetAllItems);
+                    shopRecommended = findImage(shopRecommendedTarget);
                     if (r != null) {
-                        getBotController().getMouse().click(r.getCenter());
+                        getBotController().getMouse().click(shopRecommended.getCenter());
                         sleep(1000);
                     }
-                    r = findImage(targetHealth);
-                    if (r != null) {
-                        getBotController().getMouse().click(r.getCenter());
-                        getBotController().getMouse().click(getBotController().getDesktopScreenRegion().getUpperLeftCorner());
-                        sleep(1000);
-                        r = findImage(targetGiantsBelt);
-                        if (r != null) {
-                            regionGiantBelt = r;
-                            getBotController().getMouse().click(r.getCenter());
-                            sleep(1000);
-                            r = findImage(targetSenFine);
-                            regionSenfine = r;
-                            if (r != null) {
-                                botController.getMouse().click(r.getCenter());
-                            }
-                            regionBuy = findImage(targetBuy);
-                            if (regionBuy != null) {
-                                getBotController().getMouse().click(regionBuy.getCenter());
-                                getBotController().getMouse().click(regionBuy.getCenter());
-                                getBotController().getMouse().click(regionBuy.getCenter());
-                            }
-                            regionMagazineClose = findImage(magazineClose);
-                        }
-                    }
+                    regionMagazineClose = findImage(magazineClose);
                     getBotController().getKeyboard().keyDown(KeyEvent.VK_P);
                     sleep(200);
                     getBotController().getKeyboard().keyUp(KeyEvent.VK_P);
@@ -354,5 +287,49 @@ public class AntiAfkAction extends AbstractBotAction {
             log(String.format("%s minutes passed of %s to restart", gameMinPassed, BotProperties.getBotProperties().getGameTimeoutMin()));
         } while (gameMinPassed < BotProperties.getBotProperties().getGameTimeoutMin());
         return getBotController().getRestartLoLAction();
+    }
+
+    private long buyItems(ScreenRegion shopRecommended, ScreenRegion regionMagazineClose, long lastShopping, double lastShoppingPassed) {
+        if (regionMagazineClose != null && shopRecommended != null &&
+                lastShoppingPassed > BotProperties.getBotProperties().getGameShopTimeoutSec()) { // shopping
+            log("It's shopping time!");
+            getBotController().getMouse().click(shopRecommended.getCenter());
+
+            int leftX = shopRecommended.getLowerLeftCorner().getX();
+            int middleX = shopRecommended.getCenter().getX();
+            int rightX = shopRecommended.getLowerRightCorner().getX();
+
+            int yDistance = 100;
+
+            int offsetY = 150;
+            List<Point> points = new ArrayList<>();
+            for (int i = 0; i < 4; i++) {
+                offsetY += yDistance;
+                points.add(new Point(leftX, offsetY));
+                points.add(new Point(middleX, offsetY));
+                points.add(new Point(rightX, offsetY));
+            }
+
+            Collections.shuffle(points);
+
+            getBotController().getKeyboard().keyDown(KeyEvent.VK_P);
+            sleep(100);
+            getBotController().getKeyboard().keyUp(KeyEvent.VK_P);
+            sleep(500);
+
+            for (Point point : points) {
+                DefaultScreenLocation location = new DefaultScreenLocation(getBotController().getDesktopScreenRegion().getScreen(), point.x, point.y);
+                getBotController().getMouse().click(location);
+                sleep(10);
+                getBotController().getMouse().click(location);
+            }
+
+            getBotController().getKeyboard().keyDown(KeyEvent.VK_P);
+            sleep(100);
+            getBotController().getKeyboard().keyUp(KeyEvent.VK_P);
+            getBotController().getMouse().click(regionMagazineClose.getCenter());
+            lastShopping = System.currentTimeMillis();
+        }
+        return lastShopping;
     }
 }

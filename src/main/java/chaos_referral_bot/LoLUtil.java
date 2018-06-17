@@ -53,6 +53,7 @@ public class LoLUtil {
     }
 
     public static void forceKillExplorer() throws IOException {
+        if (true) {return;}
         ChaosProcessUtil.killAllProcesses(EXPLORER_PROCESS_NAME);
     }
 
@@ -65,6 +66,7 @@ public class LoLUtil {
     }
 
     public static void startExplorerIfNotRunning() throws Exception {
+        if (true) {return;}
         if (!ChaosProcessUtil.isProcessRunning(EXPLORER_PROCESS_NAME)) {
             ChaosExecutor chaosExecutor = new ChaosExecutor();
             chaosExecutor.setExitValues(null);

@@ -6,6 +6,10 @@ import chaos_referral_bot.LoLUtil;
 import chaos_referral_bot.resources.Resources;
 import org.sikuli.api.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 
 public class StartingGameCycleAction extends AbstractBotAction {
     ImageTarget targetAcceptMatch = new ImageTarget(Resources.getUrl(Resources.getAcceptMatchImagePath()));
@@ -88,13 +92,19 @@ public class StartingGameCycleAction extends AbstractBotAction {
                     (int) Math.round(r.getBounds().getX() + r.getBounds().width / 2D),
                     (int) Math.round(r.getBounds().getY() + r.getBounds().getHeight()) + 60
             );
+            List<ScreenLocation> screenLocations = new ArrayList<>();
+            screenLocations.add(screenLocation);
             for (int i = 0; i < 4; i++) {
-                getBotController().getMouse().click(screenLocation);
                 screenLocation = new DefaultScreenLocation(
                         screen,
                         screenLocation.getX() + 100,
                         screenLocation.getY()
                 );
+                screenLocations.add(screenLocation);
+            }
+            Collections.shuffle(screenLocations);
+            for (ScreenLocation sl : screenLocations) {
+                getBotController().getMouse().click(sl);
             }
         }
     }
