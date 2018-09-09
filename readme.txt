@@ -1,0 +1,1 @@
+download opencv-2.3.1 and put to: C:\\opencv

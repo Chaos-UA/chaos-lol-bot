@@ -59,8 +59,6 @@ public class StartingGamePreparationAction extends AbstractBotAction {
             return nextAction;
         }
 
-        if (!confirmAndPlay()) return getBotController().getRestartLoLAction();
-
         sleep(2000);
         t = new ImageTarget(Resources.getUrl(Resources.getLolLeaverBusterImage()));
         long maxLeaverBusterTimeMs = 1000 * 60 * 22;// currently max leaver buster is 20 min
@@ -145,6 +143,7 @@ public class StartingGamePreparationAction extends AbstractBotAction {
         }
         getBotController().getMouse().click(r.getCenter());
 
+        if (!confirmAndPlay()) return getBotController().getRestartLoLAction();
         if (!selectRole()) return getBotController().getRestartLoLAction();
 
         return null;
@@ -180,6 +179,7 @@ public class StartingGamePreparationAction extends AbstractBotAction {
             return getBotController().getRestartLoLAction();
         }
         getBotController().getMouse().click(r.getCenter());
+        if (!confirmAndPlay()) return getBotController().getRestartLoLAction();
         return null;
     }
 }
